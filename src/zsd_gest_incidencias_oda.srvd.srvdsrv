@@ -1,0 +1,5 @@
+@EndUserText.label: 'Incident Management'
+define service ZSD_GEST_INCIDENCIAS_ODA {
+  expose Z_C_INCIDENCIA_ODA     as Incidencia;
+  expose ZCDS_C_HISTORYDATA_ODA as HistoricalData;
+}
