@@ -7,6 +7,7 @@ provider contract transactional_query
 as projection on Z_R_INCIDENCIA_ODA
 {
     key IncUuid,
+    IncidentId,
     Title,
     Description,
     Status,

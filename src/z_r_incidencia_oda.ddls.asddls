@@ -5,6 +5,7 @@ define root view entity Z_R_INCIDENCIA_ODA as select from zdt_inct_oda as Incide
 composition[0..*] of ZCDS_HISTORYDATA_ODA as _HistoryData
 {
     key Incidencia.inc_uuid as IncUuid,
+    Incidencia.incident_id as IncidentId,
     Incidencia.title as Title,
     Incidencia.description as Description,
     Incidencia.status as Status,
