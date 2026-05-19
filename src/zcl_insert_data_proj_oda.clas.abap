@@ -48,9 +48,12 @@ CLASS zcl_insert_data_proj_oda IMPLEMENTATION.
     TRY.
 
         MODIFY zdt_inct_oda FROM TABLE @( VALUE #(
-                                                 ( inc_uuid = cl_system_uuid=>create_uuid_x16_static( ) incident_id = '00000001' title = 'Laptop' description = 'CPU damaged'    status = 'OP' priority = 'M' )
-                                                 ( inc_uuid = cl_system_uuid=>create_uuid_x16_static( ) incident_id = '00000002' title = 'Tablet' description = 'Extend memory'  status = 'OP' priority = 'L' )
-                                                 ( inc_uuid = cl_system_uuid=>create_uuid_x16_static( ) incident_id = '00000003' title = 'Mobil'  description = 'Screen crashed' status = 'OP' priority = 'H' )
+                                                 ( inc_uuid = cl_system_uuid=>create_uuid_x16_static( ) incident_id = '00000001' title = 'Laptop'
+                                                 description = 'CPU damaged' status = 'OP' priority = 'M' creation_date = '20260512' changed_date = '20260512' )
+                                                 ( inc_uuid = cl_system_uuid=>create_uuid_x16_static( ) incident_id = '00000002' title = 'Tablet'
+                                                 description = 'Extend memory'  status = 'OP' priority = 'L' creation_date = '20260514' changed_date = '20260514' )
+                                                 ( inc_uuid = cl_system_uuid=>create_uuid_x16_static( ) incident_id = '00000003' title = 'Mobil'
+                                                 description = 'Screen crashed' status = 'OP' priority = 'H' creation_date = '20260514' changed_date = '20260514' )
                                         ) ).
 
       CATCH cx_uuid_error INTO DATA(lc_exception).
@@ -75,8 +78,8 @@ CLASS zcl_insert_data_proj_oda IMPLEMENTATION.
       TRY.
 
           MODIFY zdt_inct_h_oda FROM TABLE @( VALUE #(
-                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000001' previous_status = ''   new_status = 'OP' )
-                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000001' previous_status = 'OP' new_status = 'IP' )
+                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000091' previous_status = ''   new_status = 'OP' text = 'Require new CPU' )
+                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000091' previous_status = 'OP' new_status = 'IP' text = 'Waiting new CPU component' )
 
                                              ) ).
         CATCH cx_uuid_error INTO lc_exception.
@@ -85,8 +88,35 @@ CLASS zcl_insert_data_proj_oda IMPLEMENTATION.
       ENDTRY.
 
     ENDIF.
+
     IF sy-subrc EQ 0.
-      out->write( |New entries for table Historical Incident:  { sy-dbcnt }| ).
+      out->write( |New entries for table Historical Incident Num. 1:  { sy-dbcnt }| ).
+    ENDIF.
+
+*--- Incident Number 0000002
+    SELECT SINGLE inc_uuid FROM zdt_inct_oda
+    WHERE incident_id = '00000002'
+    INTO @lv_inc_uuid.
+
+    IF sy-subrc EQ 0.
+
+      TRY.
+
+          MODIFY zdt_inct_h_oda FROM TABLE @( VALUE #(
+                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000092' previous_status = ''   new_status = 'OP' text = 'Needed new Memory slot' )
+                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000092' previous_status = 'OP' new_status = 'IP' text = 'Waiting new memory component' )
+                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000092' previous_status = 'IP' new_status = 'CL' text = 'Tablet repaired' )
+
+                                             ) ).
+        CATCH cx_uuid_error INTO lc_exception.
+          out->write( lc_exception->get_text(  ) ).
+
+      ENDTRY.
+
+    ENDIF.
+
+    IF sy-subrc EQ 0.
+      out->write( |New entries for table Historical Incident Num. 2:  { sy-dbcnt }| ).
     ENDIF.
 
   ENDMETHOD.

@@ -2,9 +2,9 @@
 @EndUserText.label: 'CDS - Proyección Incidencia'
 @Metadata.ignorePropagatedAnnotations: true
 @Metadata.allowExtensions: true
-define root view entity Z_C_INCIDENCIA_ODA 
+define root view entity Z_C_INCIDENT_ODA 
 provider contract transactional_query
-as projection on Z_R_INCIDENCIA_ODA
+as projection on Z_R_INCIDENT_ODA
 {
     key IncUuid,
     IncidentId,
@@ -20,5 +20,7 @@ as projection on Z_R_INCIDENCIA_ODA
     LocalLastChangedAt,
     LastChangedAt,
     /* Associations */
-    _HistoryData: redirected to composition child ZCDS_C_HISTORYDATA_ODA
+    _HistoryData: redirected to composition child ZCDS_C_HISTORYDATA_ODA,
+    _Status,
+    _Priority
 }

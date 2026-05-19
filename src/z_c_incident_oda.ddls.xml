@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <DDLS>
-    <DDLNAME>Z_C_INCIDENCIA_ODA</DDLNAME>
+    <DDLNAME>Z_C_INCIDENT_ODA</DDLNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
     <DDTEXT>CDS - Proyección Incidencia</DDTEXT>
     <SOURCE_TYPE>P</SOURCE_TYPE>

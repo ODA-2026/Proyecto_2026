@@ -1,0 +1,67 @@
+@Metadata.layer: #PARTNER
+
+@UI: {headerInfo: { typeName: 'Incident',
+                    typeNamePlural: 'Incidents',
+                    title: { type: #STANDARD,
+                             value: 'IncidentId' } },
+      presentationVariant: [{ sortOrder: [{by: 'IncidentId',
+                                           direction: #ASC}],
+                              visualizations: [{ type: #AS_LINEITEM }]}]
+     }
+
+annotate entity Z_C_INCIDENT_ODA with
+{
+
+  @UI.facet: [{ id: 'IncidentDetail',
+                  purpose: #STANDARD,
+                  type: #IDENTIFICATION_REFERENCE,
+                  label: 'Incident Detail',
+                  position: 10 }]
+
+  @UI.hidden: true
+  
+  IncUuid;
+
+  @UI: { lineItem: [{ position: 10 },
+                    { type: #FOR_ACTION,
+                      dataAction: 'ChangeStatus',
+                      label: 'Change Status',
+                      position: 10 }],
+                            
+         identification: [{ position: 10 }] }
+
+  IncidentId;
+
+  @UI: { lineItem: [{ position: 20 }],
+         identification: [{ position: 20 }] }
+  Title;
+
+  @UI: { lineItem: [{ position: 30 }],
+         identification: [{ position: 30 }] }
+  Description;
+
+  @UI.hidden: true
+  LocalCreatedBy;
+
+  @UI.hidden: true
+  LocalCreatedAt;
+
+  @UI.hidden: true
+  LocalLastChangedBy;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  _HistoryData;
+
+  @UI.hidden: true
+  _Status;
+
+  @UI.hidden: true
+  _Priority;
+
+}

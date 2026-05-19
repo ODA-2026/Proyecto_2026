@@ -1,5 +1,5 @@
 @EndUserText.label: 'Incident Management'
 define service ZSD_INCIDENTS_MANAG_ODA {
-  expose Z_C_INCIDENCIA_ODA     as Incidencia;
+  expose Z_C_INCIDENT_ODA       as Incident;
   expose ZCDS_C_HISTORYDATA_ODA as HistoricalData;
 }

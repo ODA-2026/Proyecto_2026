@@ -14,5 +14,5 @@ define view entity ZCDS_C_HISTORYDATA_ODA as projection on ZCDS_HISTORYDATA_ODA
     LocalLastChangedAt,
     LastChangedAt,
     /* Associations */
-    Incidencia: redirected to parent Z_C_INCIDENCIA_ODA
+    Incident: redirected to parent Z_C_INCIDENT_ODA
 }
