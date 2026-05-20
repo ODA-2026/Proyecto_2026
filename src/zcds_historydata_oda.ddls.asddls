@@ -7,6 +7,7 @@ association to parent Z_R_INCIDENT_ODA as Incident on Incident.IncUuid = $projec
 {
    key his_uuid as HisUuid,
    inc_uuid as IncUuid,
+   his_id as HisId,
    previous_status as PreviousStatus,
    new_status as NewStatus,
    text as Text,

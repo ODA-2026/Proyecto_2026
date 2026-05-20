@@ -1,0 +1,65 @@
+@Metadata.layer: #CORE
+
+@UI: {headerInfo: { typeName: 'History Data',
+                    typeNamePlural: 'History',
+                    title: { type: #STANDARD,
+                             value: 'HisId' } },
+      presentationVariant: [{ sortOrder: [{by: 'HisId',
+                                           direction: #ASC}],
+                              visualizations: [{ type: #AS_LINEITEM }]}]
+     }
+
+annotate entity ZCDS_C_HISTORYDATA_ODA with
+{
+
+  @UI.facet: [ { id: 'HistoricalData',
+                purpose: #STANDARD,
+                type: #LINEITEM_REFERENCE,
+                label: 'History',
+                position: 10 }]
+
+  @UI.hidden: true
+  HisUuid;
+
+  @UI.hidden: true
+  IncUuid;
+
+  @UI: { lineItem: [{ position: 10,
+                      label: 'History ID',
+                      importance: #MEDIUM }]}
+  HisId;
+
+  @UI: { lineItem: [{ position: 20,
+                      label: 'Prev. Status',
+                      importance: #LOW }]}
+  PreviousStatus;
+
+  @UI: { lineItem: [{ position: 30,
+                      label: 'New Status',
+                      importance: #LOW }]}
+  NewStatus;
+
+  @UI: { lineItem: [{ position: 40,
+                     label: 'Text',
+                     importance: #LOW }]}
+  Text;
+
+  @UI.hidden: true
+  LocalCreatedBy;
+
+  @UI.hidden: true
+  LocalCreatedAt;
+
+  @UI.hidden: true
+  LocalLastChangedBy;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  Incident;
+
+}

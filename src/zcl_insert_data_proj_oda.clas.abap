@@ -78,8 +78,8 @@ CLASS zcl_insert_data_proj_oda IMPLEMENTATION.
       TRY.
 
           MODIFY zdt_inct_h_oda FROM TABLE @( VALUE #(
-                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000091' previous_status = ''   new_status = 'OP' text = 'Require new CPU' )
-                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000091' previous_status = 'OP' new_status = 'IP' text = 'Waiting new CPU component' )
+                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000023' previous_status = ''   new_status = 'OP' text = 'Require new CPU' )
+                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000035' previous_status = 'OP' new_status = 'IP' text = 'Waiting new CPU component' )
 
                                              ) ).
         CATCH cx_uuid_error INTO lc_exception.
@@ -103,9 +103,9 @@ CLASS zcl_insert_data_proj_oda IMPLEMENTATION.
       TRY.
 
           MODIFY zdt_inct_h_oda FROM TABLE @( VALUE #(
-                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000092' previous_status = ''   new_status = 'OP' text = 'Needed new Memory slot' )
-                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000092' previous_status = 'OP' new_status = 'IP' text = 'Waiting new memory component' )
-                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000092' previous_status = 'IP' new_status = 'CL' text = 'Tablet repaired' )
+                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000042' previous_status = ''   new_status = 'OP' text = 'Needed new Memory slot' )
+                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000055' previous_status = 'OP' new_status = 'IP' text = 'Waiting new memory component' )
+                                                     ( his_uuid = cl_system_uuid=>create_uuid_x16_static( ) inc_uuid = lv_inc_uuid his_id = '000000066' previous_status = 'IP' new_status = 'CL' text = 'Tablet repaired' )
 
                                              ) ).
         CATCH cx_uuid_error INTO lc_exception.

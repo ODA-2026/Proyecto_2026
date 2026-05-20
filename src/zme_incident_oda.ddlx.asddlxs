@@ -1,4 +1,4 @@
-@Metadata.layer: #PARTNER
+@Metadata.layer: #CORE
 
 @UI: {headerInfo: { typeName: 'Incident',
                     typeNamePlural: 'Incidents',
@@ -12,33 +12,66 @@
 annotate entity Z_C_INCIDENT_ODA with
 {
 
-  @UI.facet: [{ id: 'IncidentDetail',
+  @UI.facet: [{ id: 'Incident_Detail',
                   purpose: #STANDARD,
                   type: #IDENTIFICATION_REFERENCE,
-                  label: 'Incident Detail',
-                  position: 10 }]
+                  label: 'Incident',
+                  position: 10 },
+
+               { id: 'Historical_Data',
+                  purpose: #STANDARD,
+                  type: #LINEITEM_REFERENCE,
+                  label: 'History',
+                  position: 20,               
+                  targetElement: '_HistoryData' }]
+
 
   @UI.hidden: true
-  
+
   IncUuid;
 
-  @UI: { lineItem: [{ position: 10 },
+  @UI: { lineItem: [{ position: 10,
+                      importance: #MEDIUM },
                     { type: #FOR_ACTION,
+                      importance: #HIGH,
                       dataAction: 'ChangeStatus',
                       label: 'Change Status',
                       position: 10 }],
-                            
-         identification: [{ position: 10 }] }
 
+         identification: [{ position: 10,
+                            label: 'Incident ID' },
+                          { type: #FOR_ACTION,
+                            importance: #HIGH,
+                            dataAction: 'ChangeStatus',
+                            label: 'Change Status',
+                            position: 10 }] }
   IncidentId;
 
-  @UI: { lineItem: [{ position: 20 }],
-         identification: [{ position: 20 }] }
+  @UI: { lineItem: [{ position: 20,
+                      importance: #LOW}],
+         identification: [{ position: 20,
+                            label: 'Title',
+                            importance: #LOW }] }
   Title;
 
-  @UI: { lineItem: [{ position: 30 }],
-         identification: [{ position: 30 }] }
+  @UI: { lineItem: [{ position: 30,
+                      importance: #LOW }],
+         identification: [{ position: 30,
+                            label: 'Description',
+                            importance: #LOW }] }
   Description;
+
+  @UI: { lineItem: [{ position: 40,
+                      importance: #LOW }],
+       identification: [{ position: 40,
+                          importance: #LOW }] }
+  Status;
+
+  @UI: { lineItem: [{ position: 50,
+                      importance: #LOW }],
+       identification: [{ position: 50,
+                          importance: #LOW }] }
+  Priority;
 
   @UI.hidden: true
   LocalCreatedBy;
