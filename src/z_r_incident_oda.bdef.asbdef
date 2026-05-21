@@ -1,0 +1,77 @@
+managed implementation in class zbp_r_incident_oda unique;
+strict ( 2 );
+with draft;
+
+define behavior for Z_R_INCIDENT_ODA //alias <alias_name>
+persistent table zdt_inct_oda
+draft table zdt_inct_d_oda
+lock master
+
+total etag LastChangedAt
+etag master LocalLastChangedAt
+
+authorization master ( instance )
+//etag master <field_name>
+{
+  create ( authorization : global );
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) IncUuid;
+  association _HistoryData { create; }
+
+  draft action Resume;
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+
+  draft determine action Prepare
+  {
+  }
+
+  mapping for zdt_inct_oda
+    {
+      IncUuid            = inc_uuid;
+      IncidentId         = incident_id;
+      Title              = title;
+      Description        = description;
+      Status             = status;
+      Priority           = priority;
+      CreatedDate        = creation_date;
+      ChangedDate        = changed_date;
+      LocalCreatedBy     = local_created_by;
+      LocalCreatedAt     = local_created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedAt      = last_changed_at;
+    }
+}
+
+define behavior for ZCDS_HISTORYDATA_ODA //alias <alias_name>
+persistent table zdt_inct_h_oda
+draft table zdt_inct_h_d_oda
+lock dependent by Incident
+authorization dependent by Incident
+////etag master <field_name>
+{
+  update;
+  delete;
+  field ( numbering : managed, readonly ) HisUuid;
+  field ( readonly ) IncUuid;
+  association Incident;
+
+  mapping for zdt_inct_h_oda
+    {
+      HisUuid            = his_uuid;
+      IncUuid            = inc_uuid;
+      HisId              = his_id;
+      PreviousStatus     = previous_status;
+      NewStatus          = new_status;
+      Text               = text;
+      LocalCreatedBy     = local_created_by;
+      LocalCreatedAt     = local_created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedAt      = last_changed_at;
+    }
+}

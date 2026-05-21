@@ -7,12 +7,19 @@ association[1] to zdt_status_oda as _Status on _Status.status_code = $projection
 association[1] to zdt_priority_oda as _Priority on _Priority.priority_code = $projection.Priority
 {
     key Incident.inc_uuid as IncUuid,
+    @EndUserText.label: 'Incident ID'
     Incident.incident_id as IncidentId,
+    @EndUserText.label: 'Title'
     Incident.title as Title,
+    @EndUserText.label: 'Description'
     Incident.description as Description,
+    @EndUserText.label: 'Status'
     Incident.status as Status,
+    @EndUserText.label: 'Priority'
     Incident.priority as Priority,
-    Incident.creation_date as CreationDate,
+    @EndUserText.label: 'Created Date'
+    Incident.creation_date as CreatedDate,
+    @EndUserText.label: 'Changed Date'
     Incident.changed_date as ChangedDate,
     Incident.local_created_by as LocalCreatedBy,
     Incident.local_created_at as LocalCreatedAt,

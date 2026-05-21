@@ -12,7 +12,7 @@ as projection on Z_R_INCIDENT_ODA
     Description,
     Status,
     Priority,
-    CreationDate,
+    CreatedDate,
     ChangedDate,
     LocalCreatedBy,
     LocalCreatedAt,

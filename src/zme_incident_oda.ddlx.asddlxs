@@ -22,7 +22,7 @@ annotate entity Z_C_INCIDENT_ODA with
                   purpose: #STANDARD,
                   type: #LINEITEM_REFERENCE,
                   label: 'History',
-                  position: 20,               
+                  position: 20,
                   targetElement: '_HistoryData' }]
 
 
@@ -30,13 +30,18 @@ annotate entity Z_C_INCIDENT_ODA with
 
   IncUuid;
 
+  @EndUserText.label: 'Incident ID'
+
   @UI: { lineItem: [{ position: 10,
+                      label: 'Incident ID',
                       importance: #MEDIUM },
                     { type: #FOR_ACTION,
                       importance: #HIGH,
                       dataAction: 'ChangeStatus',
                       label: 'Change Status',
                       position: 10 }],
+
+         selectionField: [{ position: 10 }],
 
          identification: [{ position: 10,
                             label: 'Incident ID' },
@@ -48,30 +53,78 @@ annotate entity Z_C_INCIDENT_ODA with
   IncidentId;
 
   @UI: { lineItem: [{ position: 20,
+                      label: 'Title',
                       importance: #LOW}],
+
          identification: [{ position: 20,
                             label: 'Title',
                             importance: #LOW }] }
   Title;
 
+  @EndUserText.label: 'Description'
+
   @UI: { lineItem: [{ position: 30,
+                      label: 'Description',
                       importance: #LOW }],
+
+         selectionField: [{ position: 20 }],
+
          identification: [{ position: 30,
                             label: 'Description',
                             importance: #LOW }] }
   Description;
 
+  @EndUserText.label: 'Status'
+
   @UI: { lineItem: [{ position: 40,
+                      label: 'Status',
                       importance: #LOW }],
+
+       selectionField: [{ position: 30 }],
+
        identification: [{ position: 40,
+                          label: 'Status',
                           importance: #LOW }] }
   Status;
 
+  @EndUserText.label: 'Priority'
+
   @UI: { lineItem: [{ position: 50,
+                      label: 'Priority',
                       importance: #LOW }],
+
+       selectionField: [{ position: 40 }],
+
        identification: [{ position: 50,
+                          label: 'Priority',
                           importance: #LOW }] }
   Priority;
+
+  @EndUserText.label: 'Created Date'
+
+  @UI: { lineItem: [{ position: 60,
+                      label: 'Created Date',
+                      importance: #LOW }],
+
+       selectionField: [{ position: 50 }],
+
+       identification: [{ position: 60,
+                          label: 'Created Date',
+                          importance: #LOW }] }
+  CreatedDate;
+
+  @EndUserText.label: 'Changed Date'
+
+  @UI: { lineItem: [{ position: 70,
+                      label: 'Changed Date',
+                      importance: #LOW }],
+
+       selectionField: [{ position: 60 }],
+
+       identification: [{ position: 70,
+                          label: 'Changed Date',
+                          importance: #LOW }] }
+  ChangedDate;
 
   @UI.hidden: true
   LocalCreatedBy;

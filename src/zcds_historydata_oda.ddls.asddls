@@ -7,9 +7,13 @@ association to parent Z_R_INCIDENT_ODA as Incident on Incident.IncUuid = $projec
 {
    key his_uuid as HisUuid,
    inc_uuid as IncUuid,
+   @EndUserText.label: 'History ID'
    his_id as HisId,
+   @EndUserText.label: 'Previous Status'
    previous_status as PreviousStatus,
+   @EndUserText.label: 'New Status'
    new_status as NewStatus,
+   @EndUserText.label: 'Text'
    text as Text,
    local_created_by as LocalCreatedBy,
    local_created_at as LocalCreatedAt,

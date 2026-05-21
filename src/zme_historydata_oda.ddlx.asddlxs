@@ -1,11 +1,11 @@
 @Metadata.layer: #CORE
 
-@UI: {headerInfo: { typeName: 'History Data',
+@UI: {headerInfo: { typeName: 'History',
                     typeNamePlural: 'History',
                     title: { type: #STANDARD,
                              value: 'HisId' } },
       presentationVariant: [{ sortOrder: [{by: 'HisId',
-                                           direction: #ASC}],
+                                           direction: #DESC}],
                               visualizations: [{ type: #AS_LINEITEM }]}]
      }
 
@@ -14,7 +14,7 @@ annotate entity ZCDS_C_HISTORYDATA_ODA with
 
   @UI.facet: [ { id: 'HistoricalData',
                 purpose: #STANDARD,
-                type: #LINEITEM_REFERENCE,
+                type: #IDENTIFICATION_REFERENCE,
                 label: 'History',
                 position: 10 }]
 
@@ -23,21 +23,29 @@ annotate entity ZCDS_C_HISTORYDATA_ODA with
 
   @UI.hidden: true
   IncUuid;
+  
+  @EndUserText.label: 'History ID'
 
   @UI: { lineItem: [{ position: 10,
                       label: 'History ID',
                       importance: #MEDIUM }]}
   HisId;
+  
+  @EndUserText.label: 'Prev. Status'
 
   @UI: { lineItem: [{ position: 20,
                       label: 'Prev. Status',
                       importance: #LOW }]}
   PreviousStatus;
+  
+  @EndUserText.label: 'New Status'
 
   @UI: { lineItem: [{ position: 30,
                       label: 'New Status',
                       importance: #LOW }]}
   NewStatus;
+
+  @EndUserText.label: 'Text'
 
   @UI: { lineItem: [{ position: 40,
                      label: 'Text',
