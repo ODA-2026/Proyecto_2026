@@ -18,6 +18,12 @@ authorization master ( instance )
   delete;
 
   field ( numbering : managed, readonly ) IncUuid;
+  field (readonly) IncidentId, Status, ChangedDate;
+  field (readonly) LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy, LocalLastChangedAt, LastChangedAt;
+  field (mandatory) Title, Description, Priority;
+
+
+
   association _HistoryData { create; }
 
   draft action Resume;
