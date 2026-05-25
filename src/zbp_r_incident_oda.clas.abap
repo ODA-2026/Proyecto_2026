@@ -1,0 +1,5 @@
+CLASS zbp_r_incident_oda DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF z_r_incident_oda.
+ENDCLASS.
+
+CLASS zbp_r_incident_oda IMPLEMENTATION.
+ENDCLASS.

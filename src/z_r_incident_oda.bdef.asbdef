@@ -2,7 +2,7 @@ managed implementation in class zbp_r_incident_oda unique;
 strict ( 2 );
 with draft;
 
-define behavior for Z_R_INCIDENT_ODA //alias <alias_name>
+define behavior for Z_R_INCIDENT_ODA alias Incident
 persistent table zdt_inct_oda
 draft table zdt_inct_d_oda
 lock master
@@ -11,20 +11,39 @@ total etag LastChangedAt
 etag master LocalLastChangedAt
 
 authorization master ( instance )
-//etag master <field_name>
+
 {
   create ( authorization : global );
   update;
   delete;
 
-  field ( numbering : managed, readonly ) IncUuid;
-  field (readonly) IncidentId, Status, ChangedDate;
+  field (numbering:managed, readonly) IncUuid;
+  field (readonly) IncidentId;
+  field (readonly) Status, CreatedDate, ChangedDate;
   field (readonly) LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy, LocalLastChangedAt, LastChangedAt;
   field (mandatory) Title, Description, Priority;
 
+  action (features: instance, authorization: update) ChangeStatus parameter ZAE_PARAM_CHANGE_STATUS result [1] $self;
 
+  internal action NewRecorHistory;
 
-  association _HistoryData { create; }
+  validation CheckDatesRange on save {create; field CreatedDate; field ChangedDate;}
+  validation CheckCreatedDate on save {create; field CreatedDate;}
+
+  determination FillFieldsCreationInc on modify {create;}
+  determination NewStatusToHistory on save { create; }
+
+  determine action ValidateDatesRange {validation CheckDatesRange;}
+  determine action ValidateCreatedDate {validation CheckCreatedDate;}
+
+  side effects {
+  action ChangeStatus affects $self;
+  field Status affects field _HistoryData.NewStatus;
+  determine action ValidateDatesRange executed on field CreatedDate, field ChangedDate affects messages;
+  determine action ValidateCreatedDate executed on field CreatedDate affects messages;
+  }
+
+  association _HistoryData { create (features : instance); with draft; }
 
   draft action Resume;
   draft action Edit;
@@ -33,6 +52,8 @@ authorization master ( instance )
 
   draft determine action Prepare
   {
+  validation CheckDatesRange;
+  validation CheckCreatedDate;
   }
 
   mapping for zdt_inct_oda
@@ -53,18 +74,21 @@ authorization master ( instance )
     }
 }
 
-define behavior for ZCDS_HISTORYDATA_ODA //alias <alias_name>
+define behavior for ZCDS_HISTORYDATA_ODA alias History
 persistent table zdt_inct_h_oda
 draft table zdt_inct_h_d_oda
 lock dependent by Incident
 authorization dependent by Incident
-////etag master <field_name>
+etag master LocalLastChangedAt
 {
   update;
   delete;
-  field ( numbering : managed, readonly ) HisUuid;
-  field ( readonly ) IncUuid;
-  association Incident;
+
+  field (numbering:managed, readonly) HisUuid;
+  field (readonly) IncUuid;
+  field (readonly) LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy, LocalLastChangedAt, LastChangedAt;
+
+  association Incident {with draft;}
 
   mapping for zdt_inct_h_oda
     {

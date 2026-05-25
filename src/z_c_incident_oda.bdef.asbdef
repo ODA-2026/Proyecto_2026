@@ -1,0 +1,30 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for Z_C_INCIDENT_ODA alias Incident
+{
+  use create;
+  use update;
+  use delete;
+
+  use action ChangeStatus;
+  use action ValidateDatesRange;
+  use action ValidateCreatedDate;
+
+  use action Resume;
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Prepare;
+
+  use association _HistoryData { create; with draft;}
+}
+
+define behavior for ZCDS_C_HISTORYDATA_ODA alias History
+{
+  use update;
+  use delete;
+
+  use association Incident {with draft;}
+}

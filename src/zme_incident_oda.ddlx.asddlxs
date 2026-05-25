@@ -3,6 +3,7 @@
 @UI: {headerInfo: { typeName: 'Incident',
                     typeNamePlural: 'Incidents',
                     title: { type: #STANDARD,
+                             label: 'Incidents',
                              value: 'IncidentId' } },
       presentationVariant: [{ sortOrder: [{by: 'IncidentId',
                                            direction: #ASC}],
@@ -12,13 +13,13 @@
 annotate entity Z_C_INCIDENT_ODA with
 {
 
-  @UI.facet: [{ id: 'Incident_Detail',
+  @UI.facet: [{ id: 'IncidentDetail',
                   purpose: #STANDARD,
                   type: #IDENTIFICATION_REFERENCE,
                   label: 'Incident',
                   position: 10 },
 
-               { id: 'Historical_Data',
+               { id: 'HistoricalData',
                   purpose: #STANDARD,
                   type: #LINEITEM_REFERENCE,
                   label: 'History',
@@ -36,7 +37,7 @@ annotate entity Z_C_INCIDENT_ODA with
                       label: 'Incident ID',
                       importance: #MEDIUM },
                     { type: #FOR_ACTION,
-                      importance: #HIGH,
+                      importance: #MEDIUM,
                       dataAction: 'ChangeStatus',
                       label: 'Change Status',
                       position: 10 }],
@@ -46,7 +47,7 @@ annotate entity Z_C_INCIDENT_ODA with
          identification: [{ position: 10,
                             label: 'Incident ID' },
                           { type: #FOR_ACTION,
-                            importance: #HIGH,
+                            importance: #MEDIUM,
                             dataAction: 'ChangeStatus',
                             label: 'Change Status',
                             position: 10 }] }
