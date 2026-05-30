@@ -27,12 +27,19 @@ authorization master ( instance )
 
   internal action NewRecorHistory;
 
+  validation CheckTitle on save {create; field Title;}
+  validation CheckDescription on save {create; field Description;}
+  validation CheckPriority on save {create; field Priority;}
+
   validation CheckDatesRange on save {create; field CreatedDate; field ChangedDate;}
   validation CheckCreatedDate on save {create; field CreatedDate;}
 
   determination FillFieldsCreationInc on modify {create;}
   determination NewStatusToHistory on save { create; }
 
+  determine action ValidateTitle {validation CheckTitle;}
+  determine action ValidateDescription {validation CheckDescription;}
+  determine action ValidatePriority {validation CheckPriority;}
   determine action ValidateDatesRange {validation CheckDatesRange;}
   determine action ValidateCreatedDate {validation CheckCreatedDate;}
 

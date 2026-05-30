@@ -16,14 +16,25 @@ CLASS lhc_Z_R_INCIDENT_ODA DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS FillFieldsCreationInc FOR DETERMINE ON MODIFY
       IMPORTING keys FOR Incident~FillFieldsCreationInc.
 
-    METHODS NewRecorHistory FOR DETERMINE ON SAVE
-      IMPORTING keys FOR Incident~NewRecorHistory.
-
     METHODS CheckCreatedDate FOR VALIDATE ON SAVE
       IMPORTING keys FOR Incident~CheckCreatedDate.
 
     METHODS CheckDatesRange FOR VALIDATE ON SAVE
       IMPORTING keys FOR Incident~CheckDatesRange.
+    METHODS NewRecorHistory FOR MODIFY
+      IMPORTING keys FOR ACTION Incident~NewRecorHistory.
+
+    METHODS NewStatusToHistory FOR DETERMINE ON SAVE
+      IMPORTING keys FOR Incident~NewStatusToHistory.
+
+    METHODS CheckDescription FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Incident~CheckDescription.
+
+    METHODS CheckPriority FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Incident~CheckPriority.
+
+    METHODS CheckTitle FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Incident~CheckTitle.
 
 ENDCLASS.
 
@@ -59,13 +70,13 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
     FIELDS ( Status )
     WITH incidents_for_upd.
 
-    read entities of z_r_incident_oda in local mode
-    entity Incident
-    all fields
-    with corresponding #( keys )
-    result data(incidents_updated_status).
+    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+    ENTITY Incident
+    ALL FIELDS
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(incidents_updated_status).
 
-    result = value #( for incident in incidents_updated_status ( %tky = incident-%tky
+    result = VALUE #( FOR incident IN incidents_updated_status ( %tky = incident-%tky
                                                                  %param = incident )  ).
 
   ENDMETHOD.
@@ -73,13 +84,100 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
   METHOD FillFieldsCreationInc.
   ENDMETHOD.
 
-  METHOD NewRecorHistory.
-  ENDMETHOD.
-
   METHOD CheckCreatedDate.
+
+  READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+    ENTITY Incident
+    FIELDS ( CreatedDate ChangedDate )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(Incidencias).
+
+    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+
+      IF <Incidencia>-CreatedDate is initial.
+        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
+      ENDIF.
+
+    ENDLOOP.
+
   ENDMETHOD.
 
   METHOD CheckDatesRange.
+
+  READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+    ENTITY Incident
+    FIELDS ( CreatedDate ChangedDate )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(Incidencias).
+
+    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+
+      IF <Incidencia>-CreatedDate gt <Incidencia>-ChangedDate.
+        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
+      ENDIF.
+
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD NewRecorHistory.
+  ENDMETHOD.
+
+  METHOD NewStatusToHistory.
+  ENDMETHOD.
+
+  METHOD CheckDescription.
+
+    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+    ENTITY Incident
+    FIELDS ( Description )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(Incidencias).
+
+    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+
+      IF <Incidencia>-Description IS INITIAL.
+        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
+      ENDIF.
+
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD CheckPriority.
+
+    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+    ENTITY Incident
+    FIELDS ( Priority )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(Incidencias).
+
+    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+
+      IF <Incidencia>-Priority IS INITIAL.
+        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
+      ENDIF.
+
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD CheckTitle.
+
+    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+    ENTITY Incident
+    FIELDS ( Title )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(Incidencias).
+
+    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+
+      IF <Incidencia>-Title IS INITIAL.
+        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
+      ENDIF.
+
+    ENDLOOP.
+
   ENDMETHOD.
 
 ENDCLASS.
