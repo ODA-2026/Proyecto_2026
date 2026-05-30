@@ -86,6 +86,11 @@ annotate entity Z_C_INCIDENT_ODA with
        identification: [{ position: 40,
                           label: 'Status',
                           importance: #LOW }] }
+
+  @Consumption.valueHelpDefinition: [{ entity.name: 'ZCDS_STATUS_VH_ODA',
+                  entity.element: 'StatusCode'//,
+//                  useForValidation: true 
+                   }]
   Status;
 
   @EndUserText.label: 'Priority'
@@ -99,6 +104,11 @@ annotate entity Z_C_INCIDENT_ODA with
        identification: [{ position: 50,
                           label: 'Priority',
                           importance: #LOW }] }
+
+  @Consumption.valueHelpDefinition: [{ entity.name: 'ZCDS_PRIORITY_VH_ODA',
+                 entity.element: 'PriorityCode'//,
+//                 useForValidation: true  
+                 }]
   Priority;
 
   @EndUserText.label: 'Created Date'
