@@ -1,4 +1,18 @@
 CLASS lhc_Z_R_INCIDENT_ODA DEFINITION INHERITING FROM cl_abap_behavior_handler.
+
+PUBLIC SECTION.
+
+CONSTANTS:
+  BEGIN OF c_status,
+    c_status_open type zed_status_code_oda value 'OP',
+    c_status_in_progress type zed_status_code_oda value 'IP',
+    c_status_pending type zed_status_code_oda value 'PE',
+    c_status_completed type zed_status_code_oda value 'CO',
+    c_status_close type zed_status_code_oda value 'CL',
+    c_status_canceled type zed_status_code_oda value 'CN',
+  END OF c_status.
+
+
   PRIVATE SECTION.
 
     METHODS get_instance_features FOR INSTANCE FEATURES
