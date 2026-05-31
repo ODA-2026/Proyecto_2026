@@ -19,17 +19,18 @@ authorization master ( instance )
 
   field (numbering:managed, readonly) IncUuid;
   field (readonly) IncidentId;
-  field (readonly) Status, CreatedDate, ChangedDate;
+  field (readonly) Status, ChangedDate;
   field (readonly) LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy, LocalLastChangedAt, LastChangedAt;
   field (mandatory) Title, Description, Priority;
 
   action (features: instance, authorization: update) ChangeStatus parameter ZAE_PARAM_CHANGE_STATUS result [1] $self;
 
-  internal action NewRecorHistory;
+  internal action NewRecordHistory;
 
   validation CheckTitle on save {create; field Title;}
   validation CheckDescription on save {create; field Description;}
   validation CheckPriority on save {create; field Priority;}
+  validation CheckStatus on save {create; field Status;}
 
   validation CheckDatesRange on save {create; field CreatedDate; field ChangedDate;}
   validation CheckCreatedDate on save {create; field CreatedDate;}

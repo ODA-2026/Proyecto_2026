@@ -1,5 +1,7 @@
 @Metadata.layer: #CORE
 
+@UI.createHidden: true
+
 @UI: {headerInfo: { typeName: 'History',
                     typeNamePlural: 'History',
                     title: { type: #STANDARD,

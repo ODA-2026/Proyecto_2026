@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>ZMESSCLASS_PROJ_ODA</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Message Class - Incidents Management</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMESSCLASS_PROJ_ODA</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>Status required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMESSCLASS_PROJ_ODA</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>Status &amp;1 unknown</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMESSCLASS_PROJ_ODA</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Priority required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMESSCLASS_PROJ_ODA</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Priority &amp;1 unknown</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMESSCLASS_PROJ_ODA</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Description required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMESSCLASS_PROJ_ODA</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Title required</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>
