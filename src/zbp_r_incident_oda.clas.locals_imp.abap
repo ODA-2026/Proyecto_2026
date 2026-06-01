@@ -178,17 +178,26 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
     READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
       ENTITY Incident
-      FIELDS ( CreatedDate ChangedDate )
+      FIELDS ( CreatedDate )
       WITH CORRESPONDING #( keys )
-      RESULT DATA(Incidencias).
+      RESULT DATA(Incidents).
 
-    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+    LOOP AT Incidents ASSIGNING FIELD-SYMBOL(<Incident>).
 
-      IF <Incidencia>-CreatedDate IS INITIAL.
-        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
+      IF <Incident>-CreatedDate IS INITIAL.
+        APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
+        APPEND VALUE #( %tky = <Incident>-%tky
+                        %state_area = 'Registered Dates Info'
+                        %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
+                                            number = '007'
+                                            severity = if_abap_behv_message=>severity-error )
+                        %element-CreatedDate = if_abap_behv=>mk-on )
+        TO reported-incident.
       ENDIF.
 
     ENDLOOP.
+
+    free Incidents.
 
   ENDMETHOD.
 
@@ -287,7 +296,7 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
         APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
         APPEND VALUE #( %tky = <Incident>-%tky
-                        %state_area = 'DESCRIPTION'
+                        %state_area = 'Basic Data'
                         %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
                                             number = '005'
                                             severity = if_abap_behv_message=>severity-error )
@@ -315,7 +324,7 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
       IF <Incident>-Priority IS INITIAL.
         APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
         APPEND VALUE #( %tky = <Incident>-%tky
-                        %state_area = 'PRIORITY'
+                        %state_area = 'Priority'
                         %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
                                             number = '003'
                                             severity = if_abap_behv_message=>severity-error )
@@ -326,7 +335,7 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
            <Incident>-Priority NE c_priority-c_priority_medium AND
            <Incident>-Priority NE c_priority-c_priority_high.
           APPEND VALUE #( %tky = <Incident>-%tky
-                          %state_area = 'PRIORITY'
+                          %state_area = 'Priority'
                           %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
                                             number = '004'
                                             v1 = <Incident>-Priority
@@ -355,7 +364,7 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
       IF <Incident>-Title IS INITIAL.
         APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
         APPEND VALUE #( %tky = <Incident>-%tky
-                        %state_area = 'TITLE'
+                        %state_area = 'Basic Data'
                         %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
                                             number = '006'
                                             severity = if_abap_behv_message=>severity-error )
@@ -382,10 +391,13 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
       IF <Incident>-Status IS INITIAL.
         APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
         APPEND VALUE #( %tky = <Incident>-%tky
-                        %state_area = 'STATUS'
-*                       %msg = NEW zcl_messages_manag_proj_oda( textid = zcl_messages_manag_proj_oda=>status_required
-*                                                               severity = if_abap_behv_message=>severity-error )
-) TO reported-incident.
+                        %state_area = 'Status'
+                        %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
+                                            number = '001'
+                                            v1 = <Incident>-Status
+                                            severity = if_abap_behv_message=>severity-error )
+                        %element-Status = if_abap_behv=>mk-on )
+        TO reported-incident.
       ELSE.
         IF <Incident>-Status NE c_status-c_status_open AND
            <Incident>-Status NE c_status-c_status_in_progress AND
@@ -395,11 +407,13 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
            <Incident>-Status NE c_status-c_status_canceled.
           APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
           APPEND VALUE #( %tky = <Incident>-%tky
-                        %state_area = 'STATUS'
-*                       %msg = NEW zcl_messages_manag_proj_oda( textid = zcl_messages_manag_proj_oda=>status_unknown
-*                                                               status = <Incident>-Status
-*                                                               severity = if_abap_behv_message=>severity-error )
-) TO reported-incident.
+                        %state_area = 'Status'
+                        %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
+                                            number = '002'
+                                            v1 = <Incident>-Status
+                                            severity = if_abap_behv_message=>severity-error )
+                        %element-Status = if_abap_behv=>mk-on )
+          TO reported-incident.
         ENDIF.
       ENDIF.
 

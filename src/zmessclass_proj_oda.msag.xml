@@ -44,6 +44,12 @@
      <MSGNR>006</MSGNR>
      <TEXT>Title required</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMESSCLASS_PROJ_ODA</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Created Date required</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

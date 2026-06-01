@@ -53,7 +53,7 @@ CLASS zcl_insert_data_proj_oda IMPLEMENTATION.
                                                  ( inc_uuid = cl_system_uuid=>create_uuid_x16_static( ) incident_id = '00000002' title = 'Tablet'
                                                  description = 'Extend memory'  status = 'OP' priority = 'L' creation_date = '20260514' changed_date = '20260514' )
                                                  ( inc_uuid = cl_system_uuid=>create_uuid_x16_static( ) incident_id = '00000003' title = 'Mobil'
-                                                 description = 'Screen crashed' status = 'OP' priority = 'H' creation_date = '20260514' changed_date = '20260514' )
+                                                 description = 'Screen crashed' status = 'CN' priority = 'H' creation_date = '20260514' changed_date = '20260514' )
                                         ) ).
 
       CATCH cx_uuid_error INTO DATA(lc_exception).
