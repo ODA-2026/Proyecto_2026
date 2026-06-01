@@ -176,19 +176,19 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
   METHOD CheckCreatedDate.
 
-*    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
-*      ENTITY Incident
-*      FIELDS ( CreatedDate ChangedDate )
-*      WITH CORRESPONDING #( keys )
-*      RESULT DATA(Incidencias).
-*
-*    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
-*
-*      IF <Incidencia>-CreatedDate IS INITIAL.
-*        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
-*      ENDIF.
-*
-*    ENDLOOP.
+    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+      ENTITY Incident
+      FIELDS ( CreatedDate ChangedDate )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(Incidencias).
+
+    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+
+      IF <Incidencia>-CreatedDate IS INITIAL.
+        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
+      ENDIF.
+
+    ENDLOOP.
 
   ENDMETHOD.
 
@@ -212,7 +212,9 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
   METHOD NewRecordHistory.
 
-    DATA: history_for_create TYPE TABLE FOR CREATE z_r_incident_oda\_HistoryData.
+    DATA: history_for_create  TYPE TABLE FOR CREATE z_r_incident_oda\_HistoryData,
+          ls_incident_history TYPE zdt_inct_h_oda,
+          lv_text_exception   TYPE string.
 
     READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
     ENTITY Incident
@@ -221,8 +223,31 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
     RESULT DATA(Incidents).
 
     LOOP AT Incidents ASSIGNING FIELD-SYMBOL(<incident>).
+
+      CLEAR: ls_incident_history,
+             lv_text_exception.
+
+*--- Se crea nuevo UUID para la nueva línea de Historial
+      TRY.
+          ls_incident_history-inc_uuid = cl_system_uuid=>create_uuid_x16_static( ).
+        CATCH cx_uuid_error INTO DATA(lo_error).
+          lv_text_exception = lo_error->get_text(  ).
+      ENDTRY.
+
+*--- Se detecta la línea de historial actual
+      DATA(lv_max_his_id) = get_history_index( IMPORTING ev_incuuid = <incident>-IncUUID ).
+
+      IF lv_max_his_id IS INITIAL.
+        ls_incident_history-his_id = 1.
+      ELSE.
+        ls_incident_history-his_id = lv_max_his_id + 1.
+      ENDIF.
+
       APPEND VALUE #( %tky = <incident>-%tky
-                      %target = VALUE #( ( NewStatus = ''
+                      %target = VALUE #( ( HisUuid = ls_incident_history-inc_uuid
+                                           IncUuid = <incident>-IncUuid
+                                           HisId = ls_incident_history-his_id
+                                           NewStatus = c_status-c_status_open
                                            Text = 'First Incident Device' ) )
                        ) TO history_for_create.
     ENDLOOP.
@@ -231,8 +256,10 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
     ENTITY Incident
     CREATE BY \_HistoryData
     FIELDS ( HisUuid IncUuid HisId PreviousStatus NewStatus Text )
-*   AUTO FILL CID
+    AUTO FILL CID
     WITH history_for_create.
+
+    FREE Incidents.
 
   ENDMETHOD.
 
@@ -252,19 +279,26 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
     ENTITY Incident
     FIELDS ( Description )
     WITH CORRESPONDING #( keys )
-    RESULT DATA(Incidencias).
+    RESULT DATA(Incidents).
 
-    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+    LOOP AT Incidents ASSIGNING FIELD-SYMBOL(<Incident>).
 
-      IF <Incidencia>-Description IS INITIAL.
-        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
-        APPEND VALUE #( %tky = <Incidencia>-%tky
+      IF <Incident>-Description IS INITIAL.
+
+        APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
+        APPEND VALUE #( %tky = <Incident>-%tky
                         %state_area = 'DESCRIPTION'
-                        %msg = NEW zcl_messages_manag_proj_oda( textid = zcl_messages_manag_proj_oda=>description_required
-                                                                severity = if_abap_behv_message=>severity-error ) ) TO reported-incident.
+                        %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
+                                            number = '005'
+                                            severity = if_abap_behv_message=>severity-error )
+                        %element-Description = if_abap_behv=>mk-on )
+        TO reported-incident.
+
       ENDIF.
 
     ENDLOOP.
+
+    FREE Incidents.
 
   ENDMETHOD.
 
@@ -274,29 +308,37 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
     ENTITY Incident
     FIELDS ( Priority )
     WITH CORRESPONDING #( keys )
-    RESULT DATA(Incidencias).
+    RESULT DATA(Incidents).
 
-    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+    LOOP AT Incidents ASSIGNING FIELD-SYMBOL(<Incident>).
 
-      IF <Incidencia>-Priority IS INITIAL.
-        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
-        APPEND VALUE #( %tky = <Incidencia>-%tky
+      IF <Incident>-Priority IS INITIAL.
+        APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
+        APPEND VALUE #( %tky = <Incident>-%tky
                         %state_area = 'PRIORITY'
-                        %msg = NEW zcl_messages_manag_proj_oda( textid = zcl_messages_manag_proj_oda=>priority_required
-                                                                severity = if_abap_behv_message=>severity-error ) ) TO reported-incident.
+                        %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
+                                            number = '003'
+                                            severity = if_abap_behv_message=>severity-error )
+                        %element-Priority = if_abap_behv=>mk-on )
+        TO reported-incident.
       ELSE.
-        IF <Incidencia>-Priority NE c_priority-c_priority_low AND
-           <Incidencia>-Priority NE c_priority-c_priority_medium AND
-           <Incidencia>-Priority NE c_priority-c_priority_high.
-          APPEND VALUE #( %tky = <Incidencia>-%tky
+        IF <Incident>-Priority NE c_priority-c_priority_low AND
+           <Incident>-Priority NE c_priority-c_priority_medium AND
+           <Incident>-Priority NE c_priority-c_priority_high.
+          APPEND VALUE #( %tky = <Incident>-%tky
                           %state_area = 'PRIORITY'
-                          %msg = NEW zcl_messages_manag_proj_oda( textid = zcl_messages_manag_proj_oda=>priority_unknown
-                                                                  priority = <Incidencia>-Priority
-                                                                  severity = if_abap_behv_message=>severity-error ) ) TO reported-incident.
+                          %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
+                                            number = '004'
+                                            v1 = <Incident>-Priority
+                                            severity = if_abap_behv_message=>severity-error )
+                          %element-Priority = if_abap_behv=>mk-on )
+          TO reported-incident.
         ENDIF.
       ENDIF.
 
     ENDLOOP.
+
+    FREE Incidents.
 
   ENDMETHOD.
 
@@ -306,55 +348,64 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
     ENTITY Incident
     FIELDS ( Title )
     WITH CORRESPONDING #( keys )
-    RESULT DATA(Incidencias).
+    RESULT DATA(Incidents).
 
-    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+    LOOP AT Incidents ASSIGNING FIELD-SYMBOL(<Incident>).
 
-      IF <Incidencia>-Title IS INITIAL.
-        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
-        APPEND VALUE #( %tky = <Incidencia>-%tky
+      IF <Incident>-Title IS INITIAL.
+        APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
+        APPEND VALUE #( %tky = <Incident>-%tky
                         %state_area = 'TITLE'
-                        %msg = NEW zcl_messages_manag_proj_oda( textid = zcl_messages_manag_proj_oda=>title_required
-                                                                severity = if_abap_behv_message=>severity-error ) ) TO reported-incident.
+                        %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
+                                            number = '006'
+                                            severity = if_abap_behv_message=>severity-error )
+                        %element-Title = if_abap_behv=>mk-on )
+         TO reported-incident.
       ENDIF.
 
     ENDLOOP.
+
+    FREE Incidents.
 
   ENDMETHOD.
 
   METHOD CheckStatus.
 
-*    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
-*      ENTITY Incident
-*      FIELDS ( Status )
-*      WITH CORRESPONDING #( keys )
-*      RESULT DATA(Incidencias).
-*
-*    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
-*
-*      IF <Incidencia>-Status IS INITIAL.
-*        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
-*        APPEND VALUE #( %tky = <Incidencia>-%tky
-*                        %state_area = 'STATUS'
-*                        %msg = NEW zcl_messages_manag_proj_oda( textid = zcl_messages_manag_proj_oda=>status_required
-*                                                                severity = if_abap_behv_message=>severity-error ) ) TO reported-incident.
-*      ELSE.
-*        IF <Incidencia>-Status NE c_status-c_status_open AND
-*           <Incidencia>-Status NE c_status-c_status_in_progress AND
-*           <Incidencia>-Status NE c_status-c_status_pending AND
-*           <Incidencia>-Status NE c_status-c_status_completed AND
-*           <Incidencia>-Status NE c_status-c_status_close AND
-*           <Incidencia>-Status NE c_status-c_status_canceled.
-*          APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
-*          APPEND VALUE #( %tky = <Incidencia>-%tky
-*                        %state_area = 'STATUS'
-*                        %msg = NEW zcl_messages_manag_proj_oda( textid = zcl_messages_manag_proj_oda=>status_unknown
-*                                                                status = <Incidencia>-Status
-*                                                                severity = if_abap_behv_message=>severity-error ) ) TO reported-incident.
-*        ENDIF.
-*      ENDIF.
-*
-*    ENDLOOP.
+    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+      ENTITY Incident
+      FIELDS ( Status )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(Incidents).
+
+    LOOP AT Incidents ASSIGNING FIELD-SYMBOL(<Incident>).
+
+      IF <Incident>-Status IS INITIAL.
+        APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
+        APPEND VALUE #( %tky = <Incident>-%tky
+                        %state_area = 'STATUS'
+*                       %msg = NEW zcl_messages_manag_proj_oda( textid = zcl_messages_manag_proj_oda=>status_required
+*                                                               severity = if_abap_behv_message=>severity-error )
+) TO reported-incident.
+      ELSE.
+        IF <Incident>-Status NE c_status-c_status_open AND
+           <Incident>-Status NE c_status-c_status_in_progress AND
+           <Incident>-Status NE c_status-c_status_pending AND
+           <Incident>-Status NE c_status-c_status_completed AND
+           <Incident>-Status NE c_status-c_status_closed AND
+           <Incident>-Status NE c_status-c_status_canceled.
+          APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
+          APPEND VALUE #( %tky = <Incident>-%tky
+                        %state_area = 'STATUS'
+*                       %msg = NEW zcl_messages_manag_proj_oda( textid = zcl_messages_manag_proj_oda=>status_unknown
+*                                                               status = <Incident>-Status
+*                                                               severity = if_abap_behv_message=>severity-error )
+) TO reported-incident.
+        ENDIF.
+      ENDIF.
+
+    ENDLOOP.
+
+ free Incidents.
 
   ENDMETHOD.
 
