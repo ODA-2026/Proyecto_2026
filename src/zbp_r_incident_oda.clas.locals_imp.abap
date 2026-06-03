@@ -163,59 +163,14 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
       APPEND VALUE #( %tky = <Incident>-%tky
                       IncidentId = ( lv_max_incidentid + sy-index )
                       Status = c_status-c_status_open
-                      ChangedDate = cl_abap_context_info=>get_system_date(  ) ) TO incidents_update.
+                      CreatedDate = cl_abap_context_info=>get_system_date(  ) ) TO incidents_update.
     ENDLOOP.
 
     MODIFY ENTITIES OF z_r_incident_oda IN LOCAL MODE
    ENTITY Incident
    UPDATE
-   FIELDS ( IncidentId Status ChangedDate )
+   FIELDS ( IncidentId Status CreatedDate )
    WITH incidents_update.
-
-  ENDMETHOD.
-
-  METHOD CheckCreatedDate.
-
-    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
-      ENTITY Incident
-      FIELDS ( CreatedDate )
-      WITH CORRESPONDING #( keys )
-      RESULT DATA(Incidents).
-
-    LOOP AT Incidents ASSIGNING FIELD-SYMBOL(<Incident>).
-
-      IF <Incident>-CreatedDate IS INITIAL.
-        APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
-        APPEND VALUE #( %tky = <Incident>-%tky
-                        %state_area = 'Registered Dates Info'
-                        %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
-                                            number = '007'
-                                            severity = if_abap_behv_message=>severity-error )
-                        %element-CreatedDate = if_abap_behv=>mk-on )
-        TO reported-incident.
-      ENDIF.
-
-    ENDLOOP.
-
-    free Incidents.
-
-  ENDMETHOD.
-
-  METHOD CheckDatesRange.
-
-*    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
-*      ENTITY Incident
-*      FIELDS ( CreatedDate ChangedDate )
-*      WITH CORRESPONDING #( keys )
-*      RESULT DATA(Incidencias).
-*
-*    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
-*
-*      IF <Incidencia>-CreatedDate GT <Incidencia>-ChangedDate.
-*        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
-*      ENDIF.
-*
-*    ENDLOOP.
 
   ENDMETHOD.
 
@@ -419,7 +374,52 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
     ENDLOOP.
 
- free Incidents.
+    FREE Incidents.
+
+  ENDMETHOD.
+
+  METHOD CheckCreatedDate.
+
+    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+      ENTITY Incident
+      FIELDS ( CreatedDate )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(Incidents).
+
+    LOOP AT Incidents ASSIGNING FIELD-SYMBOL(<Incident>).
+
+      IF <Incident>-CreatedDate IS INITIAL.
+        APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
+        APPEND VALUE #( %tky = <Incident>-%tky
+                        %state_area = 'Registered Dates Info'
+                        %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
+                                            number = '007'
+                                            severity = if_abap_behv_message=>severity-error )
+                        %element-CreatedDate = if_abap_behv=>mk-on )
+        TO reported-incident.
+      ENDIF.
+
+    ENDLOOP.
+
+    free Incidents.
+
+  ENDMETHOD.
+
+  METHOD CheckDatesRange.
+
+*    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+*      ENTITY Incident
+*      FIELDS ( CreatedDate ChangedDate )
+*      WITH CORRESPONDING #( keys )
+*      RESULT DATA(Incidencias).
+*
+*    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
+*
+*      IF <Incidencia>-CreatedDate GT <Incidencia>-ChangedDate.
+*        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
+*      ENDIF.
+*
+*    ENDLOOP.
 
   ENDMETHOD.
 

@@ -120,4 +120,5 @@ CLASS zcl_insert_data_proj_oda IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
 ENDCLASS.
