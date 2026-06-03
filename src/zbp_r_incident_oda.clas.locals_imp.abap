@@ -113,6 +113,8 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
     DATA: incidents_for_upd TYPE TABLE FOR UPDATE z_r_incident_oda.
 
+    DATA: lv_error_process type abap_bool.
+
     READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
     ENTITY Incident
     FIELDS ( Status )
@@ -120,9 +122,37 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
     RESULT DATA(Incidents).
 
     LOOP AT Incidents ASSIGNING FIELD-SYMBOL(<incident>).
+
+*--- Verificación de si es posible o no cambiar el status
+    DATA(lv_status_popup) = keys[ KEY id %tky = <incident>-%tky ]-%param-status.
+
+    IF ( lv_status_popup eq c_status-c_status_completed AND <incident>-Status eq c_status-c_status_pending ) OR
+       ( lv_status_popup eq c_status-c_status_closed AND <incident>-Status eq c_status-c_status_pending ).
+
+       APPEND VALUE #( %tky = <incident>-%tky ) TO failed-incident.
+
+       APPEND VALUE #( %tky = <Incident>-%tky
+                        %state_area = 'Change Status Process'
+                        %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
+                                            number = '009'
+                                            v1 = lv_status_popup
+                                            severity = if_abap_behv_message=>severity-error ) )
+       TO reported-incident.
+
+       lv_error_process = abap_true.
+
+       exit.
+
+    ELSE.
+
       APPEND VALUE #( %tky = <incident>-%tky
                       Status = keys[ KEY id %tky = <incident>-%tky ]-%param-status ) TO incidents_for_upd.
+
+    ENDIF.
+
     ENDLOOP.
+
+    check lv_error_process eq abap_false.
 
     MODIFY ENTITIES OF z_r_incident_oda IN LOCAL MODE
     ENTITY Incident
@@ -147,7 +177,7 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
     READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
       ENTITY Incident
-      FIELDS ( IncidentId Status ChangedDate )
+      FIELDS ( IncidentId Status )
       WITH CORRESPONDING #( keys )
       RESULT DATA(Incidents).
 
@@ -163,13 +193,14 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
       APPEND VALUE #( %tky = <Incident>-%tky
                       IncidentId = ( lv_max_incidentid + sy-index )
                       Status = c_status-c_status_open
-                      CreatedDate = cl_abap_context_info=>get_system_date(  ) ) TO incidents_update.
+                      CreatedDate = cl_abap_context_info=>get_system_date(  )
+                      ChangedDate = cl_abap_context_info=>get_system_date(  ) ) TO incidents_update.
     ENDLOOP.
 
     MODIFY ENTITIES OF z_r_incident_oda IN LOCAL MODE
    ENTITY Incident
    UPDATE
-   FIELDS ( IncidentId Status CreatedDate )
+   FIELDS ( IncidentId Status CreatedDate ChangedDate )
    WITH incidents_update.
 
   ENDMETHOD.
@@ -407,19 +438,26 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
   METHOD CheckDatesRange.
 
-*    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
-*      ENTITY Incident
-*      FIELDS ( CreatedDate ChangedDate )
-*      WITH CORRESPONDING #( keys )
-*      RESULT DATA(Incidencias).
-*
-*    LOOP AT Incidencias ASSIGNING FIELD-SYMBOL(<Incidencia>).
-*
-*      IF <Incidencia>-CreatedDate GT <Incidencia>-ChangedDate.
-*        APPEND VALUE #( %tky = <Incidencia>-%tky ) TO failed-incident.
-*      ENDIF.
-*
-*    ENDLOOP.
+    READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
+      ENTITY Incident
+      FIELDS ( CreatedDate ChangedDate )
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(Incidents).
+
+    LOOP AT Incidents ASSIGNING FIELD-SYMBOL(<Incident>).
+
+      IF <Incident>-CreatedDate GT <Incident>-ChangedDate.
+        APPEND VALUE #( %tky = <Incident>-%tky ) TO failed-incident.
+        APPEND VALUE #( %tky = <Incident>-%tky
+                        %state_area = 'Registered Dates Info'
+                        %msg = new_message( id = 'ZMESSCLASS_PROJ_ODA'
+                                            number = '008'
+                                            severity = if_abap_behv_message=>severity-error )
+                        %element-CreatedDate = if_abap_behv=>mk-on )
+        TO reported-incident.
+      ENDIF.
+
+    ENDLOOP.
 
   ENDMETHOD.
 
