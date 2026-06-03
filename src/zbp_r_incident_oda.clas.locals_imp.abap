@@ -111,9 +111,12 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
   METHOD ChangeStatus.
 
-    DATA: incidents_for_upd TYPE TABLE FOR UPDATE z_r_incident_oda.
+    DATA: incidents_for_upd TYPE TABLE FOR UPDATE z_r_incident_oda,
+           lt_association TYPE TABLE FOR CREATE z_r_incident_oda\_HistoryData.
 
     DATA: lv_error_process type abap_bool.
+
+    DATA: ls_history TYPE zdt_inct_h_oda.
 
     READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
     ENTITY Incident
@@ -146,7 +149,8 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
     ELSE.
 
       APPEND VALUE #( %tky = <incident>-%tky
-                      Status = keys[ KEY id %tky = <incident>-%tky ]-%param-status ) TO incidents_for_upd.
+                      Status = keys[ KEY id %tky = <incident>-%tky ]-%param-status
+                      ChangedDate = cl_abap_context_info=>get_system_date( ) ) TO incidents_for_upd.
 
     ENDIF.
 
@@ -154,11 +158,54 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
     check lv_error_process eq abap_false.
 
+
+*--- Se obtiene el texto
+    DATA(lv_text) = keys[ KEY id %tky = <incident>-%tky ]-%param-text.
+
+*--- Se obtiene el número de próximo registro de historial
+    DATA(lv_next_id) = get_history_index( IMPORTING ev_incuuid = <incident>-IncUUID ).
+
+      IF lv_next_id IS INITIAL.
+        lv_next_id = 1.
+      ELSE.
+        lv_next_id += 1.
+      ENDIF.
+
+*--- Se construye el registro de historial
+
+     CLEAR: ls_history, lt_association.
+
+      TRY.
+          ls_history-inc_uuid = cl_system_uuid=>create_uuid_x16_static( ).
+        CATCH cx_uuid_error INTO DATA(lx_excepction).
+      ENDTRY.
+
+    ls_history-his_id = lv_next_id.
+    ls_history-text = lv_text.
+    ls_history-new_status = lv_status_popup.
+
+    APPEND VALUE #( %tky = <incident>-%tky
+                    %target = VALUE #( (  HisUUID = ls_history-inc_uuid
+                                          IncUUID = <incident>-IncUUID
+                                          HisID = ls_history-his_id
+                                          PreviousStatus = <incident>-Status
+                                          NewStatus = ls_history-new_status
+                                          Text = ls_history-text ) ) ) TO lt_association.
+
     MODIFY ENTITIES OF z_r_incident_oda IN LOCAL MODE
     ENTITY Incident
     UPDATE
-    FIELDS ( Status )
+    FIELDS ( Status ChangedDate )
     WITH incidents_for_upd.
+
+    MODIFY ENTITIES OF z_r_incident_oda IN LOCAL MODE
+     ENTITY Incident
+     CREATE BY \_HistoryData FIELDS ( HisUUID IncUUID HisID PreviousStatus NewStatus Text )
+        AUTO FILL CID
+        WITH lt_association
+     MAPPED mapped
+     FAILED failed
+     REPORTED reported.
 
     READ ENTITIES OF z_r_incident_oda IN LOCAL MODE
     ENTITY Incident
@@ -168,6 +215,8 @@ CLASS lhc_Z_R_INCIDENT_ODA IMPLEMENTATION.
 
     result = VALUE #( FOR incident IN incidents_updated_status ( %tky = incident-%tky
                                                                  %param = incident )  ).
+
+    free: incidents_for_upd, lt_association.
 
   ENDMETHOD.
 
